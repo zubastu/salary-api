@@ -6,7 +6,8 @@
     "dev": "nodemon index.ts",
     "lint": "eslint .",
     "eslint-fix": "eslint . --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "start": "pm2 start 'npx ts-node src/server.ts'"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
