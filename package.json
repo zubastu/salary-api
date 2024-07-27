@@ -8,8 +8,7 @@
     "build": "tsc --outDir dist",
     "eslint-fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
-    "deploy": "scp -r ./dist/* salary:/var/www/backend",
-    "start": "pm2 start 'npx ts-node src/server.ts'"
+    "deploy": "scp -r ./dist/* salary:/var/www/backend"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
