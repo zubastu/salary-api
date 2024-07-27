@@ -1,14 +1,16 @@
-import dotenv from 'dotenv';
-import cors from 'cors';
+import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import { errors } from 'celebrate';
+import express from "express";
+import cookieParser from "cookie-parser";
+import { errors } from "celebrate";
 
-import { errorLogger, requestLogger } from './middlewares/logger';
-import { dbConnect } from './salaryManager/init';
-import router from './salaryManager/routes/routes';
+import { errorLogger, requestLogger } from "./middlewares/logger";
+import { dbConnect } from "./salaryManager/init";
+import router from "./salaryManager/routes/routes";
+
+//import RoleModel from "./salaryManager/models/roleModel";
 
 const port = Number(process.env.SERVER_PORT) || 3005;
 
@@ -17,18 +19,19 @@ async function startServer() {
   app.use(requestLogger);
   app.use(
     cors({
-      origin: '*',
+      origin: "*",
     }),
   );
 
   app.use(express.json());
   app.use(cookieParser());
-  app.use('/', router);
+  app.use("/", router);
   app.use(errors());
   app.use(errorLogger); // error logger
 
   app.listen(port);
 }
+
 dbConnect().then(() => {
   startServer().then(() => {
     console.log(

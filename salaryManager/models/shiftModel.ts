@@ -7,12 +7,12 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
+} from "sequelize-typescript";
 
-import EmployeeModel from './employeeModel';
+import UserModel from "./userModel";
 
 @Table({
-  tableName: 'workShifts',
+  tableName: "workShifts",
 })
 class ShiftModel extends Model<ShiftModel> {
   @PrimaryKey
@@ -23,7 +23,7 @@ class ShiftModel extends Model<ShiftModel> {
   public override id: string;
 
   @AllowNull(false)
-  @Column(DataType.STRING)
+  @Column(DataType.DATE)
   date: string;
 
   @Column({
@@ -68,12 +68,16 @@ class ShiftModel extends Model<ShiftModel> {
   })
   isNightShift: boolean;
 
-  @ForeignKey(() => EmployeeModel)
+  @ForeignKey(() => UserModel)
   @Column(DataType.UUID)
-  employee_id: EmployeeModel;
+  user_id: UserModel;
 
-  @BelongsTo(() => EmployeeModel)
-  public employee: EmployeeModel;
+  @BelongsTo(() => UserModel, {
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+    hooks: true,
+  })
+  public user: UserModel;
 }
 
 export default ShiftModel;

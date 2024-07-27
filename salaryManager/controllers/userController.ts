@@ -1,117 +1,106 @@
-import User from '../models/userModel';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from "express";
+import shiftModel from "../models/shiftModel";
+import UserModel from "../models/userModel";
+import * as console from "console";
+import RoleModel from "../models/roleModel";
 
-dotenv.config();
-
-const checkDuplicateUsername = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  User.findOne({
-    where: {
-      username: req.body.username,
+const getUser = (req: Request, res: Response) => {
+  UserModel.findOne({
+    //@ts-ignore
+    where: { id: req.userId },
+    attributes: {
+      exclude: ["password"],
+    },
+    include: {
+      model: RoleModel,
     },
   })
     .then((user) => {
-      if (user) {
-        res.status(400).send({
-          message: 'Failed! Username is already in use!',
-        });
+      res.status(200).json(user);
+    })
+    .catch(() => {
+      res.status(400).json({ message: "Bad request" });
+    });
+};
+
+const getEmployees = (_: Request, res: Response) => {
+  UserModel.findAll({
+    where: { role_id: 0 },
+    attributes: {
+      exclude: ["password"],
+    },
+  })
+    .then((employees) => {
+      res.status(200).json(employees);
+    })
+    .catch(() => {
+      res.status(400).json({ message: "Bad request" });
+    });
+};
+
+const getEmployeeById = (req: Request, res: Response) => {
+  const { employee_id } = req.params;
+  UserModel.findOne({
+    where: { id: employee_id },
+    include: {
+      model: shiftModel,
+    },
+    attributes: {
+      exclude: ["password"],
+    },
+  })
+    .then((employee) => {
+      if (employee) {
+        res.status(200).json(employee);
         return;
       }
-
-      next();
+      res.status(404).json({ message: "Not found" });
     })
     .catch(() => {
-      res.status(400).json({ message: 'Bad request' });
+      res.status(400).json({ message: "Bad request" });
     });
 };
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  let token = req.headers['x-access-token'];
-  const secret = process.env.SECRET!;
-
-  if (!token) {
-    res.status(403).send({
-      message: 'No token provided!',
-    });
-  }
-  if (typeof token === 'string') {
-    jwt.verify(token, secret, (err, decoded) => {
-      if (err) {
-        res.status(401).send({
-          message: 'Unauthorized!',
-        });
-      }
-      //@ts-ignore
-      req.userId = decoded.id;
-      next();
-    });
-  }
-};
-
-const signup = (req: Request, res: Response) => {
-  const username = req.body.username;
-  const password = bcrypt.hashSync(req.body.password, 8);
-
-  // @ts-ignore
-  User.create({ username, password })
-    .then((user) => {
-      if (user.id) {
-        res.send({
-          message: 'User was registered successfully!',
-        });
-      }
-    })
-    .catch(() => {
-      res.status(400).json({ message: 'Bad request' });
-    });
-};
-
-const signin = (req: Request, res: Response) => {
-  const secret = process.env.SECRET!;
-  User.findOne({
-    where: {
-      username: req.body.username,
+const updateEmployee = (req: Request, res: Response) => {
+  const { employee_id } = req.params;
+  UserModel.update(
+    { name: req.body.name },
+    {
+      where: {
+        id: employee_id,
+      },
+      returning: true,
     },
-  })
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'User Not found.' });
-      }
-      if (user) {
-        const passwordIsValid = bcrypt.compareSync(
-          req.body.password,
-          user.password,
-        );
-
-        if (!passwordIsValid) {
-          res.status(401).send({
-            accessToken: null,
-            message: 'Invalid Password!',
-          });
-        }
-
-        const token = jwt.sign({ id: user.id }, secret, {
-          algorithm: 'HS256',
-          allowInsecureKeySizes: true,
-          expiresIn: 86400, // 24 hours
-        });
-
-        res.status(200).send({
-          id: user.id,
-          username: user.username,
-          accessToken: token,
-        });
-      }
+  )
+    .then((updateRecord) => {
+      updateRecord[0] === 1
+        ? res.status(200).json({ message: "OK" })
+        : res.status(404).json({ message: "Not found" });
     })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
+    .catch((e) => {
+      res.status(400).json({ message: e ? e : "Bad request" });
     });
 };
 
-export { checkDuplicateUsername, signin, signup, verifyToken };
+const deleteEmployee = (req: Request, res: Response) => {
+  const { employee_id } = req.params;
+  UserModel.destroy({ where: { id: employee_id } })
+    .then((deletedRecord) => {
+      console.log(deletedRecord);
+      deletedRecord === 1
+        ? res.status(200).json({ message: "OK" })
+        : res.status(404).json({ message: "Not found" });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(400).json({ message: "Bad request" });
+    });
+};
+
+export {
+  getEmployees,
+  updateEmployee,
+  deleteEmployee,
+  getEmployeeById,
+  getUser,
+};

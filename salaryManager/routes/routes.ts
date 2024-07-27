@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 
 import {
   getWorkShifts,
@@ -6,37 +6,62 @@ import {
   postWorkShift,
   updateWorkShift,
   getAllWorkShifts,
-} from '../controllers/workShiftsController';
+  getWorkShiftsBetweenDates,
+  getAllWorkShiftsBetweenDates,
+} from "../controllers/workShiftsController";
 import {
   updateEmployee,
   deleteEmployee,
-  createEmployee,
   getEmployees,
-} from '../controllers/employeeController';
+  getEmployeeById,
+  getUser,
+} from "../controllers/userController";
 
 import {
   checkDuplicateUsername,
+  isAdmin,
   signin,
   signup,
   verifyToken,
-} from '../controllers/userController';
+} from "../controllers/authController";
 
 const router = express.Router();
 
-router.get('/employee', getEmployees);
-router.get('/work_shifts/:employee_id', getWorkShifts);
-router.get('/work_shifts', getAllWorkShifts);
+router.get("/users/me", verifyToken, getUser);
+router.get("/employee", verifyToken, getEmployees);
+router.get("/employee/:employee_id", verifyToken, isAdmin, getEmployeeById);
+router.delete("/employee/:employee_id", verifyToken, isAdmin, deleteEmployee);
+router.patch("/employee/:employee_id", verifyToken, isAdmin, updateEmployee);
+router.get("/work_shifts/:employee_id", verifyToken, isAdmin, getWorkShifts);
+router.get("/work_shifts", verifyToken, getAllWorkShifts);
+router.post(
+  "/work_shifts/:employee_id/dates",
+  verifyToken,
+  isAdmin,
+  getWorkShiftsBetweenDates,
+);
+router.post(
+  "/work_shifts/dates",
+  verifyToken,
+  isAdmin,
+  getAllWorkShiftsBetweenDates,
+);
+router.post("/work_shifts", verifyToken, postWorkShift);
+router.delete(
+  "/work_shifts/:work_shift_id",
+  verifyToken,
+  isAdmin,
+  deleteWorkShift,
+);
 
-router.post('/employee', verifyToken, createEmployee);
-router.post('/work_shifts', postWorkShift);
+router.patch(
+  "/work_shifts/:work_shift_id",
+  verifyToken,
+  isAdmin,
+  updateWorkShift,
+);
 
-router.delete('/employee/:employee_id', verifyToken, deleteEmployee);
-router.delete('/work_shifts/:work_shift_id', verifyToken, deleteWorkShift);
-
-router.patch('/employee/:employee_id', verifyToken, updateEmployee);
-router.patch('/work_shifts/:work_shift_id', verifyToken, updateWorkShift);
-
-router.post('/login', signin);
-router.post('/registration', checkDuplicateUsername, signup);
+router.post("/login", signin);
+router.post("/registration", checkDuplicateUsername, signup);
 
 export default router;
