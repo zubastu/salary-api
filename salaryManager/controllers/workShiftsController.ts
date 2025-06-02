@@ -31,7 +31,6 @@ const getWorkShifts = (req: Request, res: Response) => {
 
 const getAllWorkShifts = (_: Request, res: Response) => {
   ShiftModel.findAll({
-    limit: 31,
     include: {
       model: UserModel,
       attributes: {

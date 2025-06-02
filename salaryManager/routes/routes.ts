@@ -24,6 +24,10 @@ import {
   signup,
   verifyToken,
 } from "../controllers/authController";
+import {
+  getCoefficient,
+  setCoefficient,
+} from "../controllers/coeffitientController";
 
 const router = express.Router();
 
@@ -63,5 +67,8 @@ router.patch(
 
 router.post("/login", signin);
 router.post("/registration", checkDuplicateUsername, signup);
+
+router.get("/coefficient", getCoefficient);
+router.post("/coefficient", verifyToken, setCoefficient);
 
 export default router;
