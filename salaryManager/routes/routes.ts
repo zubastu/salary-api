@@ -66,7 +66,13 @@ router.patch(
 );
 
 router.post("/login", signin);
-router.post("/registration", checkDuplicateUsername, signup);
+router.post(
+  "/registration",
+  checkDuplicateUsername,
+  verifyToken,
+  isAdmin,
+  signup,
+);
 
 router.get("/coefficient", getCoefficient);
 router.post("/coefficient", verifyToken, setCoefficient);

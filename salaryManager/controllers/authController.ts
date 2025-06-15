@@ -54,7 +54,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
       }
       //@ts-ignore
       if (!decoded.id) {
-        next(new Error("Плохой токен говна"));
+        next(new Error("Bad token"));
         return;
       }
       //@ts-ignore
