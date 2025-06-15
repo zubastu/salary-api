@@ -24,7 +24,7 @@ sequelize.addModels([RoleModel, ShiftModel, UserModel, CoefficientModel]);
 export async function dbConnect() {
   try {
     await sequelize.authenticate(); // Проверка аутентификации в БД
-    await sequelize.sync({ force: true }); // Синхронизация базы данных
+    await sequelize.sync(/*{ force: true }*/); // Синхронизация базы данных
     RoleModel.findAll()
       .then((roles) => {
         if (roles.length === 0) {

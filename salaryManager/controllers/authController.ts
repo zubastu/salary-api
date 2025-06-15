@@ -91,7 +91,7 @@ const signup = (req: Request, res: Response) => {
         User.update(
           {
             // @ts-ignore
-            role_id: 0,
+            role_id: req.body.role_id,
           },
           { where: { id: user.id }, returning: true },
         )
