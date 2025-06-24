@@ -74,7 +74,7 @@ router.post(
   signup,
 );
 
-router.get("/coefficient", getCoefficient);
-router.post("/coefficient", verifyToken, setCoefficient);
+router.get("/coefficient", verifyToken, getCoefficient);
+router.post("/coefficient", verifyToken, isAdmin, setCoefficient);
 
 export default router;

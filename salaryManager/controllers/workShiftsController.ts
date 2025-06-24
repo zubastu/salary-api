@@ -38,6 +38,7 @@ const getAllWorkShifts = (_: Request, res: Response) => {
       },
     },
     order: [[Sequelize.col("date"), "DESC"]],
+    limit: 80,
   })
     .then((workShifts) => {
       res.status(200).json(workShifts);
