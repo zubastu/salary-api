@@ -7,15 +7,16 @@ import RoleModel from "./models/roleModel";
 import CoefficientModel from "./models/coeffitientModel";
 import { ROLES } from "../utils/constants";
 import * as console from "console";
+import { requireEnv } from "../utils/env";
 
 dotenv.config();
 
 const sequelizeOptions: SequelizeOptions = {
-  host: process.env.POSTGRES_HOST!,
-  port: Number(process.env.POSTGRES_PORT!),
-  username: String(process.env.POSTGRES_USER!),
-  password: String(process.env.POSTGRES_PASSWORD!),
-  database: process.env.POSTGRES_DB!,
+  host: requireEnv("POSTGRES_HOST"),
+  port: Number(requireEnv("POSTGRES_PORT")),
+  username: requireEnv("POSTGRES_USER"),
+  password: requireEnv("POSTGRES_PASSWORD"),
+  database: requireEnv("POSTGRES_DB"),
   dialect: "postgres",
   logging: (msg) => console.log(msg),
 };
@@ -28,11 +29,9 @@ export async function dbConnect() {
     RoleModel.findAll()
       .then((roles) => {
         if (roles.length === 0) {
-          //@ts-ignore
           RoleModel.create({ role: ROLES[0], id: 0 }).catch((e) =>
             console.log(e),
           );
-          //@ts-ignore
           RoleModel.create({ role: ROLES[1], id: 1 }).catch((e) =>
             console.log(e),
           );
@@ -54,7 +53,6 @@ export async function dbConnect() {
             coefficientOfGainVeryGood: 0,
             id: 0,
           };
-          //@ts-ignore
           CoefficientModel.create(defaultCoefficient).catch((e) =>
             console.log(e),
           );

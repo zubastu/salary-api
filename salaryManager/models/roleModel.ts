@@ -8,11 +8,13 @@ import {
 } from "sequelize-typescript";
 import UserModel from "./userModel";
 
+type RoleCreationAttributes = { id: number; role: string };
+
 @Table({
   tableName: "role",
   timestamps: false,
 })
-class Role extends Model<Role> {
+class Role extends Model<Role, RoleCreationAttributes> {
   @PrimaryKey
   @Column({
     type: DataType.INTEGER,

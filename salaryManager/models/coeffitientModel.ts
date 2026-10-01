@@ -6,11 +6,22 @@ import {
   Table,
 } from "sequelize-typescript";
 
+type CoefficientCreationAttributes = {
+  id: number;
+  pricePerHour: number;
+  valueOfGainGoodDay: number;
+  valueOfGainGoodNight: number;
+  valueOfGainVeryGoodDay: number;
+  valueOfGainVeryGoodNight: number;
+  coefficientOfGainGood: number;
+  coefficientOfGainVeryGood: number;
+};
+
 @Table({
   tableName: "coefficient",
   timestamps: false,
 })
-class Coefficient extends Model<Coefficient> {
+class Coefficient extends Model<Coefficient, CoefficientCreationAttributes> {
   @PrimaryKey
   @Column({
     type: DataType.INTEGER,

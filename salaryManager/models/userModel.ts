@@ -13,11 +13,18 @@ import {
 import ShiftModel from "./shiftModel";
 import RoleModel from "./roleModel";
 
+type UserCreationAttributes = {
+  username: string;
+  name: string;
+  password: string;
+  role_id: number;
+};
+
 @Table({
   tableName: "user",
   timestamps: false,
 })
-class User extends Model<User> {
+class User extends Model<User, UserCreationAttributes> {
   @PrimaryKey
   @Column({
     type: DataType.UUID,
@@ -50,7 +57,7 @@ class User extends Model<User> {
 
   @ForeignKey(() => RoleModel)
   @Column(DataType.INTEGER)
-  role_id: RoleModel;
+  role_id: number;
 
   @BelongsTo(() => RoleModel)
   role: RoleModel;

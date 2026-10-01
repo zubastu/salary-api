@@ -3,10 +3,10 @@ import shiftModel from "../models/shiftModel";
 import UserModel from "../models/userModel";
 import * as console from "console";
 import RoleModel from "../models/roleModel";
+import type { AuthenticatedRequest } from "../authenticatedRequest";
 
-const getUser = (req: Request, res: Response) => {
+const getUser = (req: AuthenticatedRequest, res: Response) => {
   UserModel.findOne({
-    //@ts-ignore
     where: { id: req.userId },
     attributes: {
       exclude: ["password"],
