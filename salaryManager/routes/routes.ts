@@ -29,7 +29,6 @@ import {
   setCoefficient,
 } from "../controllers/coeffitientController";
 import { TelegramBot } from "../TelegramBot";
-import { requireEnv } from "../../utils/env";
 
 const router = express.Router();
 
@@ -79,25 +78,27 @@ router.post(
 router.get("/coefficient", verifyToken, getCoefficient);
 router.post("/coefficient", verifyToken, isAdmin, setCoefficient);
 
-const bot = new TelegramBot({
-  botToken: requireEnv("TELEGRAM_BOT_TOKEN"),
-  chatId: requireEnv("TELEGRAM_CHAT_ID"),
-  useProxy: true,
-});
+const bot = new TelegramBot();
+router.post(
+  "/telegram-bot",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const { message } = req.body;
 
-router.post("/telegram-bot", async (req: Request, res: Response) => {
-  const { message } = req.body;
+    if (typeof message !== "string" || !message.trim()) {
+      return res
+        .status(400)
+        .json({ error: 'Missing "message" in request body' });
+    }
 
-  if (!message) {
-    return res.status(400).json({ error: 'Missing "message" in request body' });
-  }
-
-  try {
-    await bot.sendMessage(message);
-    return res.json({ status: "Message sent successfully" });
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to send message" });
-  }
-});
+    try {
+      await bot.sendMessage(message);
+      return res.json({ status: "Message sent successfully" });
+    } catch (error) {
+      console.error("[Telegram route] Failed to send message", error);
+      return res.status(500).json({ error: "Failed to send message" });
+    }
+  },
+);
 
 export default router;
