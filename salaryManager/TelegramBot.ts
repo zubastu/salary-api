@@ -5,6 +5,7 @@ import fetch from "node-fetch";
 export interface TelegramBotConfig {
   botToken: string;
   chatId: string;
+  useProxy?: boolean; // Добавляем флаг включения прокси
 }
 
 interface TelegramApiResponse {
@@ -20,7 +21,13 @@ export class TelegramBot {
   constructor(config: TelegramBotConfig) {
     this.botToken = config.botToken;
     this.chatId = config.chatId;
-    this.apiUrl = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
+
+    // Если флагuseProxy равен true, отправляем запросы на локальный мост, иначе напрямую в Telegram
+    const baseUrl = config.useProxy
+      ? "http://127.0.0.1:1443"
+      : "https://telegram.org";
+
+    this.apiUrl = `${baseUrl}/bot${this.botToken}/sendMessage`;
   }
 
   async sendMessage(message: string): Promise<void> {
@@ -34,9 +41,11 @@ export class TelegramBot {
         }),
       });
 
-      const data = await response.json() as TelegramApiResponse;
+      const data = (await response.json()) as TelegramApiResponse;
       if (!data.ok) {
-        throw new Error(`Telegram API error: ${data.description ?? "unknown error"}`);
+        throw new Error(
+          `Telegram API error: ${data.description ?? "unknown error"}`,
+        );
       }
     } catch (error) {
       console.error("Failed to send message to Telegram:", error);

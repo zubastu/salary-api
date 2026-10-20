@@ -82,6 +82,7 @@ router.post("/coefficient", verifyToken, isAdmin, setCoefficient);
 const bot = new TelegramBot({
   botToken: requireEnv("TELEGRAM_BOT_TOKEN"),
   chatId: requireEnv("TELEGRAM_CHAT_ID"),
+  useProxy: true,
 });
 
 router.post("/telegram-bot", async (req: Request, res: Response) => {
